@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "attributes": {
+        "title": "New Entry",
+        "startDate": "2022-12-01",
+        "endDate": "2022-12-16",
+        "startTime": "00:00:00.000",
+        "endTime": "00:03:00.000",
+        "allDay": null,
+        "category": "Benefits",
+        "createdAt": "2022-12-16T14:43:12.854Z",
+        "updatedAt": "2022-12-16T14:43:31.227Z",
+        "publishedAt": "2022-12-16T14:43:31.224Z"
+      }
+    }
+  ],
+  "meta": {
+    "pagination": { "page": 1, "pageSize": 25, "pageCount": 1, "total": 1 }
+  }
+}
