@@ -1,6 +1,6 @@
 ### Steps to run
 
-#### Server
+#### Server (requires node v16)
 
 0. Change into the server directory
 

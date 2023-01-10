@@ -1,0 +1,44 @@
+{
+  "name": "ukg-platform-cms",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@_sh/strapi-plugin-ckeditor": "^1.1.2",
+    "@ckeditor/strapi-plugin-ckeditor": "^0.0.4",
+    "@exfabrica/strapi-plugin-awesome-help": "^1.0.8",
+    "@ignite/tokens": "^5.2.1",
+    "@ignite/web-components": "^5.2.1",
+    "@offset-dev/strapi-calendar": "^0.0.9",
+    "@retikolo/drag-drop-content-types": "^1.2.1",
+    "@strapi/plugin-i18n": "4.5.2",
+    "@strapi/plugin-users-permissions": "4.5.2",
+    "@strapi/strapi": "^4.5.2",
+    "better-sqlite3": "7.4.6",
+    "sharp": "^0.31.2",
+    "strapi-plugin-custom-api": "^1.0.4",
+    "strapi-plugin-custom-links": "^0.2.1",
+    "strapi-plugin-generate-data": "^1.0.21",
+    "strapi-plugin-menus": "^1.1.0",
+    "strapi-plugin-navigation": "^2.2.2",
+    "strapi-plugin-preview-button": "^1.0.1",
+    "strapi-plugin-transformer": "^2.1.1"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "1166ff06-8b05-4058-95d1-8efb65b9ea81"
+  },
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}
