@@ -1,2 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/angular-calendar/css/angular-calendar.css";
+@import '~@ignite/tokens/css/ignite-tokens.css';
+@import '~@ignite/tokens/css/ignite-tokens.html-base-styles.css';
+
+/* Calendar overrides */
+
+.cal-month-view .cal-open-day-events {
+  color: #fff;
+  background-color: var(--ukg_sys_color_brand);
+  -webkit-box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 15px 0 rgba(0, 0, 0, 0.5);
+}

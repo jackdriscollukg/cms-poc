@@ -18,7 +18,20 @@
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/@ignite/web-components/dist/ignite/svg",
+                "output": "./svg"
+              },
+              {
+                "glob": "**/*.json",
+                "input": "node_modules/@ignite/web-components/dist/ignite/localization/translations/ukg",
+                "output": "./localization/translations/ukg"
+              }
+            ],
             "styles": [
               "node_modules/flatpickr/dist/flatpickr.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",

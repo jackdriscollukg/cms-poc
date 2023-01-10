@@ -14,6 +14,7 @@ export class EventsService {
   constructor(private http: HttpClient) {}
 
   eventsUrl = 'http://localhost:1337/api/calendar-events';
+  categoriesUrl = 'http://localhost:1337/api/categories';
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {
@@ -34,22 +35,35 @@ export class EventsService {
   }
 
   getEvents(): Observable<StrapiResponse> {
-    return this.http.get<StrapiResponse>(this.eventsUrl);
+    return this.http.get<StrapiResponse>(this.eventsUrl + '?populate=%2A');
   }
 
-  addEvent(event: CalendarEvent) {
+  addEvent(event: CalendarEvent, category: any) {
+    if (event.allDay) {
+      event.start.setHours(0, 0, 0, 0);
+      event.end?.setHours(0, 0, 0, 0);
+    }
+
     const newEvent: any = {
-      id: Number(event.id),
+      id: Math.floor(Math.random() * 10000),
       title: event.title,
-      startDate: event.start.toISOString(),
-      endDate: event.end?.toISOString(),
-      category: 'Benefits',
+      startDate: event.start.toISOString().split('T')[0],
+      startTime: event.allDay
+        ? '00:00:00'
+        : event.start.toLocaleTimeString('en', { hour12: false }),
+      endDate: event.end?.toISOString().split('T')[0],
+      endTime: event.allDay
+        ? '23:59:59'
+        : event.end?.toLocaleTimeString('en', { hour12: false }),
+      category: category,
+      allDay: event.allDay,
     };
+    console.log('new event', newEvent);
     const data: any = {
       data: newEvent,
     };
     return this.http
-      .post<StrapiResponse>(this.eventsUrl, data)
+      .post<StrapiResponse>(this.eventsUrl + '?populate=%2A', data)
       .pipe(catchError(this.handleError));
   }
 
@@ -72,5 +86,17 @@ export class EventsService {
       data: updatedEvent,
     };
     return this.http.put<StrapiResponse>(this.eventsUrl + '/' + event.id, data);
+  }
+
+  getCategories() {
+    return this.http.get<any>(this.categoriesUrl);
+  }
+
+  addCategory(category: any) {
+    console.log({ data: category });
+    const res = this.http
+      .post<any>(this.categoriesUrl, { data: category })
+      .pipe(catchError(this.handleError));
+    return res;
   }
 }

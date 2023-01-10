@@ -51,15 +51,26 @@ export interface StrapiResponse {
   };
 }
 
+export interface Category {
+  data: {
+    id: number;
+    attributes: {
+      color: string;
+      name: string;
+    };
+  };
+}
+
 export interface StrapiEvent {
   id: number;
   attributes: {
     title: string;
     startDate: string;
+    startTime?: string;
     endDate?: string;
     endTime?: string;
     allDay?: boolean | null;
-    category: string;
+    category?: Category;
     createdAt?: string;
     updatedAt?: string;
     publishedA?: string;
@@ -121,12 +132,14 @@ export class AppComponent {
   refresh = new Subject<void>();
 
   events: CalendarEvent[] = [];
+  categories: any[] = [];
 
   activeDayIsOpen: boolean = true;
 
   constructor(private modal: NgbModal, private eventsService: EventsService) {}
 
   ngOnInit() {
+    this.getCategories();
     this.getEvents();
     this.refresh.subscribe((ev) => console.log(ev));
   }
@@ -178,19 +191,104 @@ export class AppComponent {
     });
   }
 
-  addEvent(): void {
+  async addEvent(): Promise<void> {
+    const title = (
+      document.querySelector('#title-input') as HTMLUkgInputElement
+    )?.value;
+    let start, end;
+    const dateRangePicker = document.querySelector(
+      '#date-range-input'
+    ) as HTMLUkgDateRangePickerElement;
+    if (dateRangePicker) {
+      const dates = await dateRangePicker.getDates();
+      start = dates.startDate;
+      end = dates.endDate;
+    }
+    let allDay = false;
+    const allDayCheckbox = document.querySelector(
+      '#all-day-checkbox'
+    ) as HTMLUkgCheckboxElement;
+
+    let startTime, endTime;
+    if (allDayCheckbox) {
+      allDay = allDayCheckbox.checked;
+    }
+    if (!allDay) {
+      const startTimeInput = document.querySelector(
+        '#start-time'
+      ) as HTMLUkgInputElement;
+      const endTimeInput = document.querySelector(
+        '#end-time'
+      ) as HTMLUkgTimePickerElement;
+      if (startTimeInput && endTimeInput) {
+        startTime = startTimeInput.value;
+        endTime = endTimeInput.value;
+      }
+    }
+    const categorySelect = document.querySelector(
+      '#category-select'
+    ) as HTMLUkgSelectElement;
+
+    let category;
+    if (categorySelect) {
+      category = this.categories.find(
+        (cat) => cat.attributes.name === categorySelect.value
+      );
+    }
+
+    if (
+      !title ||
+      !start ||
+      !end ||
+      !category ||
+      (!allDay && (!startTime || !endTime))
+    ) {
+      return;
+    }
     this.eventsService
-      .addEvent({
-        title: 'New event',
-        start: new Date(),
-        end: new Date(),
-      })
+      .addEvent(
+        {
+          title,
+          start: this.stringToDate(start, startTime, false),
+          end: this.stringToDate(end, endTime, true),
+          allDay,
+        },
+        category
+      )
       .subscribe((event) => {
+        console.log(event);
         this.events = [
           ...this.events,
           this.strapiEventToCalendarEvent(event.data as any),
         ];
       });
+  }
+
+  async addCategory() {
+    const categoryNameInput = document.querySelector(
+      '#category-input'
+    ) as HTMLUkgInputElement;
+    const categoryColorInput = document.querySelector(
+      '#color-input'
+    ) as HTMLUkgInputElement;
+
+    const name = categoryNameInput?.value;
+    const color = categoryColorInput?.value;
+
+    if (!name || !color) {
+      console.error('Missing name or color!');
+      console.error('Name: ', name);
+      console.error('Color: ', color);
+    }
+
+    const data = {
+      color,
+      name,
+    };
+    this.eventsService.addCategory(data).subscribe((category) => {
+      console.log(category);
+      this.categories = [...this.categories, category.data];
+    });
   }
 
   deleteEvent(eventToDelete: CalendarEvent) {
@@ -202,6 +300,7 @@ export class AppComponent {
     this.eventsService.getEvents().subscribe((events) => {
       // format events to match CalendarEvent type
       const data: StrapiEvent[] = events.data;
+      console.log(data);
       const calendarEvents: CalendarEvent[] = data.map((event: any) =>
         this.strapiEventToCalendarEvent(event)
       );
@@ -209,25 +308,70 @@ export class AppComponent {
     });
   }
 
+  getCategories(): void {
+    this.eventsService.getCategories().subscribe((categories) => {
+      const data = categories.data;
+      this.categories = data;
+      console.log(this.categories);
+    });
+  }
+
   strapiEventToCalendarEvent(event: StrapiEvent): CalendarEvent {
+    console.log('strapi event', event);
     return {
       id: event.id,
-      start: this.stringToDate(event.attributes.startDate),
+      start: new Date(
+        event.attributes.startDate + 'T' + event.attributes.startTime
+      ),
       end: event.attributes.endDate
-        ? this.stringToDate(event.attributes.endDate)
-        : this.stringToDate(event.attributes.startDate),
+        ? new Date(event.attributes.endDate + 'T' + event.attributes.endTime)
+        : new Date(
+            event.attributes.startDate + 'T' + event.attributes.startTime
+          ),
       title: event.attributes.title,
-      color: colors['red'],
+      color: {
+        primary:
+          event.attributes.category?.data.attributes.color ??
+          colors['red'].primary,
+        secondary: '#FFFFFF',
+      },
     };
   }
 
-  stringToDate(dateString: string): Date {
-    let date = new Date(dateString);
+  stringToDate(
+    dateString: string,
+    time?: string | null,
+    isEnd?: boolean
+  ): Date {
+    let date;
+
+    console.log('date string before', dateString);
+
+    if (time) {
+      date = new Date(dateString + 'T' + time);
+    } else {
+      date = new Date(dateString);
+    }
+    console.log('date here', date);
+
     date = new Date(
       date.getUTCFullYear(),
       date.getUTCMonth(),
-      date.getUTCDate()
+      date.getUTCDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds()
     );
+
+    if (!time) {
+      if (!isEnd) {
+        date.setHours(0, 0, 0, 0);
+      } else {
+        date.setHours(23, 59, 59, 59);
+      }
+    }
+
+    console.log('date after', date);
     return date;
   }
 
@@ -237,5 +381,10 @@ export class AppComponent {
 
   closeOpenMonthViewDay() {
     this.activeDayIsOpen = false;
+  }
+
+  showTimeRange = true;
+  handleAllDayChange(event: any) {
+    this.showTimeRange = !event.detail.checked;
   }
 }

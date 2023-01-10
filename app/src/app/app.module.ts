@@ -9,7 +9,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-
+import { IgniteModule } from '@ignite/angular';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -24,6 +24,7 @@ import { HttpClientModule } from '@angular/common/http';
       useFactory: adapterFactory,
     }),
     HttpClientModule,
+    IgniteModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

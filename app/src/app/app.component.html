@@ -1,210 +1,235 @@
-<div class="row text-center">
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div
-        class="btn btn-primary"
-        mwlCalendarPreviousView
-        [view]="view"
-        [(viewDate)]="viewDate"
-        (viewDateChange)="closeOpenMonthViewDay()"
-      >
-        Previous
+<ukg-ignite-shell default-translation-path>
+  <ukg-grid-container>
+    <ukg-grid
+      size="default"
+      wrap="none"
+      brand-bg
+      style="--grid-row-container-alignment: center"
+    >
+      <div class="ukg-col-lg-4 ukg-col-md-4 ukg-col-sm-4">
+        <ukg-button
+          mwlCalendarPreviousView
+          [view]="view"
+          [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()"
+          icon-only
+          parent-icon="menu-caret-left"
+        ></ukg-button>
+        <ukg-button mwlCalendarToday [(viewDate)]="viewDate" emphasis="low"
+          >Today</ukg-button
+        >
+        <ukg-button
+          icon-only
+          parent-icon="menu-caret-right"
+          mwlCalendarNextView
+          [view]="view"
+          [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()"
+        ></ukg-button>
       </div>
-      <div
-        class="btn btn-outline-secondary"
-        mwlCalendarToday
-        [(viewDate)]="viewDate"
-      >
-        Today
+      <div class="ukg-col-lg-4 ukg-col-md-4 ukg-col-sm-4">
+        <h3 class="ukg_sys_text_display_md_onDark">
+          {{ viewDate | calendarDate : view + "ViewTitle" : "en" }}
+        </h3>
       </div>
-      <div
-        class="btn btn-primary"
-        mwlCalendarNextView
-        [view]="view"
-        [(viewDate)]="viewDate"
-        (viewDateChange)="closeOpenMonthViewDay()"
-      >
-        Next
+      <div class="ukg-col-lg-4 ukg-col-md-4 ukg-col-sm-4">
+        <ukg-button-toggle>
+          <ukg-button
+            (click)="setView(CalendarView.Month)"
+            [selected]="view === CalendarView.Month"
+            value="month"
+            is-toggle
+            >Month</ukg-button
+          >
+          <ukg-button
+            value="week"
+            is-toggle
+            (click)="setView(CalendarView.Week)"
+            [selected]="view === CalendarView.Week"
+            >Week</ukg-button
+          >
+          <ukg-button
+            (click)="setView(CalendarView.Day)"
+            [selected]="view === CalendarView.Day"
+            value="day"
+            is-toggle
+            >Day</ukg-button
+          >
+        </ukg-button-toggle>
       </div>
-    </div>
+    </ukg-grid>
+  </ukg-grid-container>
+
+  <br />
+  <div [ngSwitch]="view">
+    <mwl-calendar-month-view
+      *ngSwitchCase="CalendarView.Month"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      [activeDayIsOpen]="activeDayIsOpen"
+      (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="handleEvent('Clicked', $event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)"
+    >
+    </mwl-calendar-month-view>
+    <mwl-calendar-week-view
+      *ngSwitchCase="CalendarView.Week"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="handleEvent('Clicked', $event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)"
+    >
+    </mwl-calendar-week-view>
+    <mwl-calendar-day-view
+      *ngSwitchCase="CalendarView.Day"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="handleEvent('Clicked', $event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)"
+    >
+    </mwl-calendar-day-view>
   </div>
-  <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate : view + "ViewTitle" : "en" }}</h3>
-  </div>
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div
-        class="btn btn-primary"
-        (click)="setView(CalendarView.Month)"
-        [class.active]="view === CalendarView.Month"
-      >
-        Month
-      </div>
-      <div
-        class="btn btn-primary"
-        (click)="setView(CalendarView.Week)"
-        [class.active]="view === CalendarView.Week"
-      >
-        Week
-      </div>
-      <div
-        class="btn btn-primary"
-        (click)="setView(CalendarView.Day)"
-        [class.active]="view === CalendarView.Day"
-      >
-        Day
-      </div>
-    </div>
-  </div>
-</div>
-<br />
-<div [ngSwitch]="view">
-  <mwl-calendar-month-view
-    *ngSwitchCase="CalendarView.Month"
-    [viewDate]="viewDate"
-    [events]="events"
-    [refresh]="refresh"
-    [activeDayIsOpen]="activeDayIsOpen"
-    (dayClicked)="dayClicked($event.day)"
-    (eventClicked)="handleEvent('Clicked', $event.event)"
-    (eventTimesChanged)="eventTimesChanged($event)"
+
+  <br /><br /><br />
+  <div
+    style="
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+    "
   >
-  </mwl-calendar-month-view>
-  <mwl-calendar-week-view
-    *ngSwitchCase="CalendarView.Week"
-    [viewDate]="viewDate"
-    [events]="events"
-    [refresh]="refresh"
-    (eventClicked)="handleEvent('Clicked', $event.event)"
-    (eventTimesChanged)="eventTimesChanged($event)"
-  >
-  </mwl-calendar-week-view>
-  <mwl-calendar-day-view
-    *ngSwitchCase="CalendarView.Day"
-    [viewDate]="viewDate"
-    [events]="events"
-    [refresh]="refresh"
-    (eventClicked)="handleEvent('Clicked', $event.event)"
-    (eventTimesChanged)="eventTimesChanged($event)"
-  >
-  </mwl-calendar-day-view>
-</div>
-
-<!-- Everything you see below is just for the demo, you don't need to include it in your app -->
-
-<br /><br /><br />
-
-<h3>
-  Edit events
-  <button class="btn btn-primary float-end" (click)="addEvent()">
-    Add new
-  </button>
-  <div class="clearfix"></div>
-</h3>
-
-<div class="table-responsive">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Primary color</th>
-        <th>Secondary + text color</th>
-        <th>Starts at</th>
-        <th>Ends at</th>
-        <th>Remove</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let event of events">
-        <td>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="event.title"
-            (keyup)="handleChange(event)"
-          />
-        </td>
-        <td>
-          <input
-            type="color"
-            [(ngModel)]="event.color!.primary"
-            (change)="handleChange(event)"
-          />
-        </td>
-        <td>
-          <input
-            type="color"
-            [(ngModel)]="event.color!.secondary"
-            (change)="handleChange(event)"
-          />
-          <input
-            type="color"
-            [ngModel]="event.color!.secondaryText ?? '#1e90ff'"
-            (ngModelChange)="event.color!.secondaryText = $event"
-            (change)="handleChange(event)"
-          />
-        </td>
-        <td>
-          <input
-            class="form-control"
-            type="text"
-            mwlFlatpickr
-            [(ngModel)]="event.start"
-            (ngModelChange)="handleChange(event)"
-            [altInput]="true"
-            [convertModelValue]="true"
-            [enableTime]="true"
-            dateFormat="Y-m-dTH:i"
-            altFormat="F j, Y H:i"
-            placeholder="Not set"
-          />
-        </td>
-        <td>
-          <input
-            class="form-control"
-            type="text"
-            mwlFlatpickr
-            [(ngModel)]="event.end"
-            (ngModelChange)="handleChange(event)"
-            [altInput]="true"
-            [convertModelValue]="true"
-            [enableTime]="true"
-            dateFormat="Y-m-dTH:i"
-            altFormat="F j, Y H:i"
-            placeholder="Not set"
-          />
-        </td>
-        <td>
-          <button class="btn btn-danger" (click)="deleteEvent(event)">
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<ng-template #modalContent let-close="close">
-  <div class="modal-header">
-    <h5 class="modal-title">Event action occurred</h5>
-    <button type="button" class="close" (click)="close()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div>
-      Action:
-      <pre>{{ modalData?.action }}</pre>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      "
+    >
+      <h3>Add Event</h3>
+      <div stlye="display: flex;">
+        <ukg-input-container right-margin size="medium">
+          <ukg-label>Title</ukg-label>
+          <ukg-input id="title-input"></ukg-input>
+        </ukg-input-container>
+        <ukg-input-container right-margin size="medium">
+          <ukg-label>Category</ukg-label>
+          <ukg-select id="category-select">
+            <ng-container *ngFor="let category of categories">
+              <ukg-select-option
+                [value]="category.attributes.name"
+                [label]="category.attributes.name"
+              ></ukg-select-option>
+            </ng-container>
+          </ukg-select>
+        </ukg-input-container>
+        <ukg-date-range-picker
+          id="date-range-input"
+          width="fit-content"
+        ></ukg-date-range-picker>
+        <ukg-checkbox
+          id="all-day-checkbox"
+          full-width="false"
+          (ukgCheckboxChanged)="handleAllDayChange($event)"
+        >
+          All day
+        </ukg-checkbox>
+        <ng-container *ngIf="showTimeRange">
+          <ukg-input-container>
+            <ukg-label>Start time</ukg-label>
+            <ukg-time-picker id="start-time" is-24-hour></ukg-time-picker>
+          </ukg-input-container>
+          <ukg-input-container>
+            <ukg-label>End time</ukg-label>
+            <ukg-time-picker id="end-time" is-24-hour></ukg-time-picker>
+          </ukg-input-container>
+        </ng-container>
+      </div>
+      <ukg-button (click)="addEvent()">Add New Event</ukg-button>
     </div>
-    <div>
-      Event:
-      <pre>{{ modalData?.event | json }}</pre>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      "
+    >
+      <h3>Add Category</h3>
+      <div stlye="display: flex;">
+        <ukg-input-container right-margin size="medium">
+          <ukg-label>Name</ukg-label>
+          <ukg-input id="category-input"></ukg-input>
+        </ukg-input-container>
+        <ukg-input-container right-margin size="medium">
+          <ukg-label>Color</ukg-label>
+          <ukg-input id="color-input"></ukg-input>
+        </ukg-input-container>
+      </div>
+      <ukg-button (click)="addCategory()">Add New Event</ukg-button>
     </div>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="close()">
-      OK
-    </button>
-  </div>
-</ng-template>
+
+  <h3>Current Events</h3>
+  <ukg-data-table-container>
+    <ukg-data-table>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Starts at</th>
+            <th>Ends at</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let event of events">
+            <td>
+              {{ event.title }}
+            </td>
+
+            <td>
+              {{ event.start }}
+            </td>
+            <td>
+              {{ event.end }}
+            </td>
+            <td>
+              <button class="btn btn-danger" (click)="deleteEvent(event)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ukg-data-table>
+  </ukg-data-table-container>
+
+  <ng-template #modalContent let-close="close">
+    <div class="modal-header">
+      <h5 class="modal-title">Event action occurred</h5>
+      <button type="button" class="close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div>
+        Action:
+        <pre>{{ modalData?.action }}</pre>
+      </div>
+      <div>
+        Event:
+        <pre>{{ modalData?.event | json }}</pre>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="close()">
+        OK
+      </button>
+    </div>
+  </ng-template>
+</ukg-ignite-shell>

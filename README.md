@@ -48,5 +48,5 @@ npm install
 2. Run the client
 
 ```
-npm run serve
+npm run start
 ```
